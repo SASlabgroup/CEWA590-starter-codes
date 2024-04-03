@@ -1,0 +1,3 @@
+[submodule "stream_flow/stream_flow_python"]
+	path = stream_flow/stream_flow_python
+	url = https://github.com/shelbyahrendt/CEWA590_StreamGaging.git
