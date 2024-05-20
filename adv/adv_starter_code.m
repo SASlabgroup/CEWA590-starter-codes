@@ -6,11 +6,14 @@
 % still might be useful as a general guide for Python, etc. users.
 
 % Suneil Iyer, 2022
+% J. Thomson, 2024
+
+clear all, close all
 
 %% Q1 - loading and plotting
 
 % load data from mat file
-load(['/Users/suneiliyer/Dropbox/cewa590/TTT_ADV_Feb2011_phasedespiked.mat']);
+load(['~/Dropbox/Teaching/CEWA590/Turbulence/TTT_ADV_Feb2011_phasedespiked.mat']);
 %change path name to your folder with the data
 
 %or, use 'ncread' to load the data from NetCDF files
@@ -29,7 +32,7 @@ xlabel('hour');
 
 %% Q2 - ensemble averaging and Q3 - calculating turbulent spectra and Q4 - verify Parseval's theorem
 
-seconds=[1]; %number of seconds you want your ensemble length to be *CHANGE THIS
+seconds=[600]; %number of seconds you want your ensemble length to be *CHANGE THIS
 ensleng=32*seconds; %32 Hz data, so 32*'seconds' is approximately a 'seconds' length ensemble
 %%YOU NEED TO CHANGE THE ABOVE VALUE to whatever ensemble length you feel is
 %appropriate for these data. The value I initially include here corresponds to a
@@ -38,7 +41,7 @@ ensleng=32*seconds; %32 Hz data, so 32*'seconds' is approximately a 'seconds' le
 %initialize variables
 u_eavg=[]; t_eavg=[]; U_PSD=[];
 
-for i=1:1:length(t)/ensleng %loop through and get every ensemble
+for i=1:length(t)/ensleng %loop through and get every ensemble
     ix1=((i-1)*ensleng)+1; %define starting index of ensemble
     ix2=i*ensleng; %define ending index of ensemble
     u_eavg(i)=nanmean(u(ix1:ix2)); %ensemble average u (east-west) velocity
@@ -51,7 +54,7 @@ for i=1:1:length(t)/ensleng %loop through and get every ensemble
     %calculate a turbulent spectrum for each ensemble of u, v, and w using pwelch
     
     %For the u component...
-    [U_pxx,f] = pwelch(u(ix1:ix2),[],[],[],32); %32 Hz data
+    [U_pxx,f] = pwelch( detrend( u(ix1:ix2) ), [], [], [], 32); %32 Hz data
     %the three "blank" fields in the above line correspond to the window
     %length of the spectrum, the overlap between segments, and the number
     %of Fourier transform points. You may need to specify these fields if appropriate
@@ -66,9 +69,9 @@ for i=1:1:length(t)/ensleng %loop through and get every ensemble
     %AND specify the starting and ending indices to not include
     %noise/non-sensible data
     
-%     startix=[];
-%     endix=[];
-%     integ_u(i)=trapz(f(startix:endix),U_pxx(startix:endix));
+
+     integ_u(i) = trapz( f, U_pxx );
+     originalvariance(i) = var( u(ix1:ix2) );
 
     %And now do the same data processing for the v and w components...
 end
@@ -98,3 +101,10 @@ ylabel('PSD [m^2 s^{-2} Hz^{-1}]');
 title('U');
 set(gca,'Yscale','log'); %use a log scale - this is how spectra are typically presented
 set(gca,'Xscale','log');
+
+% check variance (Q4) 
+figure; 
+plot(originalvariance, integ_u,'kx')
+xlabel('Variance of time series for each window'), ylabel('Integral of Spectra')
+hold on, 
+plot([0 0.05],[0 0.05],'k--')
