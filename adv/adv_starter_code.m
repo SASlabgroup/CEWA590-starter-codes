@@ -35,8 +35,7 @@ xlabel('hour');
 seconds=[600]; %number of seconds you want your ensemble length to be *CHANGE THIS
 ensleng=32*seconds; %32 Hz data, so 32*'seconds' is approximately a 'seconds' length ensemble
 %%YOU NEED TO CHANGE THE ABOVE VALUE to whatever ensemble length you feel is
-%appropriate for these data. The value I initially include here corresponds to a
-%1-second ensemble, which is way too short to be reasonable!
+%appropriate for these data. 
 
 %initialize variables
 u_eavg=[]; t_eavg=[]; U_PSD=[];
